@@ -29,6 +29,14 @@ public class StudentController {
         return ResponseEntity.ok(studentService.getAllStudents());
     }
 
+    @GetMapping("/age")
+    public ResponseEntity<Collection<Student>> getByAge(@RequestParam("age") int age) {
+        if (age < 0 || age > 120) {
+            return ResponseEntity.badRequest().build();
+        }
+        return ResponseEntity.ok(studentService.getByAge(age));
+    }
+
     @PostMapping
     public Student addStudent(@RequestBody Student student) {
         return studentService.addStudent(student);

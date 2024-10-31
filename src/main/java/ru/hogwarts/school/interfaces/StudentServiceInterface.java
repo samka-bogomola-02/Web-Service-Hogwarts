@@ -3,6 +3,7 @@ package ru.hogwarts.school.interfaces;
 import ru.hogwarts.school.model.Student;
 
 import java.util.Collection;
+import java.util.List;
 
 public interface StudentServiceInterface {
     //  CRUD-методы
@@ -15,4 +16,5 @@ public interface StudentServiceInterface {
     Student deleteStudent(long id);
 
     Collection<Student> getAllStudents();
+    List<Student> getByAge(int age);
 }

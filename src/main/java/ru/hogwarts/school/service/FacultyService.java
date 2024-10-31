@@ -6,6 +6,8 @@ import ru.hogwarts.school.model.Faculty;
 
 import java.util.Collection;
 import java.util.HashMap;
+import java.util.List;
+import java.util.Objects;
 
 @Service
 public class FacultyService implements FacultyServiceInterface {
@@ -39,5 +41,12 @@ public class FacultyService implements FacultyServiceInterface {
     @Override
     public Collection<Faculty> getAllFaculty() {
         return storageList.values();
+    }
+
+    @Override
+    public List<Faculty> getByColor(String color) {
+        return storageList.values().stream()
+                .filter(faculty -> Objects.equals(faculty.getColor(), color))
+                .toList();//get filtered faculty
     }
 }

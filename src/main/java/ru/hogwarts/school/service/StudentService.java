@@ -6,6 +6,7 @@ import ru.hogwarts.school.model.Student;
 
 import java.util.Collection;
 import java.util.HashMap;
+import java.util.List;
 
 @Service
 public class StudentService implements StudentServiceInterface {
@@ -41,4 +42,12 @@ public class StudentService implements StudentServiceInterface {
     public Collection<Student> getAllStudents() {
         return students.values();
     }
+
+    @Override
+    public List<Student> getByAge(int age) {//age
+        return students.values().stream()
+                .filter(student -> student.getAge() == age)
+                .toList();//get filtered students
+    }
+
 }
