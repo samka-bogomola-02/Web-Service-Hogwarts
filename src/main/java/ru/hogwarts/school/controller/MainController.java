@@ -8,5 +8,6 @@ public class MainController {
     @RequestMapping
     public String helloHogwarts() {
         return "Welcome to the School of Witchcraft and Wizardry!";
+
     }
 }

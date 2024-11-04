@@ -56,4 +56,14 @@ public class FacultyService implements FacultyServiceInterface {
                 .filter(faculty -> faculty.getColor().equals(color))
                         .toList();
     }
+
+    public Faculty findByName(String name) {
+        return facultyRepository.findByNameIgnoreCase(name);
+    }
+    public Collection<Faculty> findByColor(String color) {
+        return facultyRepository.findByColorContainsIgnoreCase(color);
+    }
+    public Collection<Faculty> findByNamePart(String part) {
+        return facultyRepository.findByNameContainsIgnoreCase(part);
+    }
 }

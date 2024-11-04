@@ -8,8 +8,6 @@ import ru.hogwarts.school.service.StudentService;
 
 import java.util.Collection;
 
-import static org.springframework.data.jpa.domain.AbstractPersistable_.id;
-
 @RestController
 @RequestMapping("/student")
 public class StudentController {
@@ -29,8 +27,20 @@ public class StudentController {
     }
 
     @GetMapping
-    public ResponseEntity<Collection<Student>> getAllStudents() {
+    public ResponseEntity findBooks(@RequestParam(required = false) String name,
+                                    @RequestParam(required = false) Integer age,
+                                    @RequestParam(required = false) String namePart) {
+        if (name != null && !name.isBlank()) {
+            return ResponseEntity.ok(studentService.findByName(name));
+        }
+        if (age != null && age > 0) {
+            return ResponseEntity.ok(studentService.findByAge(age));
+        }
+        if (namePart != null && !namePart.isBlank()) {
+            return ResponseEntity.ok(studentService.findByNamePart(namePart));
+        }
         return ResponseEntity.ok(studentService.getAllStudents());
+
     }
 
     @GetMapping("/age")

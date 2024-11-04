@@ -1,7 +1,6 @@
 package ru.hogwarts.school.service;
 
 import org.springframework.stereotype.Service;
-import ru.hogwarts.school.exception.FacultyNotFoundException;
 import ru.hogwarts.school.exception.StudentNotFoundException;
 import ru.hogwarts.school.interfaces.StudentServiceInterface;
 import ru.hogwarts.school.model.Student;
@@ -55,6 +54,15 @@ public class StudentService implements StudentServiceInterface {
     public List<Student> getByAge(int age) {
         return studentRepository.findAll().stream()
                 .filter(student -> student.getAge() == age).toList();
+    }
+    public Student findByName(String name) {
+        return studentRepository.findByNameIgnoreCase(name);
+    }
+    public Collection<Student> findByAge(Integer age) {
+        return studentRepository.findByAge(age);
+    }
+    public Collection<Student> findByNamePart(String part) {
+        return studentRepository.findByNameContainsIgnoreCase(part);
     }
 
 }

@@ -124,7 +124,6 @@ class FacultyServiceTest {
                 new Faculty(1L, "Griffindor", "Blue"),
                 new Faculty(2L, "Sliserin", "Red")
         ));
-
         List<Faculty> faculties = facultyService.getByColor("Green");
 
         assertNotNull(faculties);

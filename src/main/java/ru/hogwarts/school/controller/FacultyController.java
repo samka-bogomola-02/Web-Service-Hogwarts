@@ -27,8 +27,20 @@ public class FacultyController {
     }
 
     @GetMapping
-    public ResponseEntity<Collection<Faculty>> getAllFaculty() {
+    public ResponseEntity findBooks(@RequestParam(required = false) String name,
+                                    @RequestParam(required = false) String color,
+                                    @RequestParam(required = false) String namePart) {
+        if (name != null && !name.isBlank()) {
+            return ResponseEntity.ok(facultyService.findByName(name));
+        }
+        if (color != null && !color.isBlank()) {
+            return ResponseEntity.ok(facultyService.findByColor(color));
+        }
+        if (namePart != null && !namePart.isBlank()) {
+            return ResponseEntity.ok(facultyService.findByNamePart(namePart));
+        }
         return ResponseEntity.ok(facultyService.getAllFaculty());
+
     }
 
     @GetMapping("/color")

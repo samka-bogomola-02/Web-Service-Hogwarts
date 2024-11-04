@@ -103,7 +103,6 @@ class StudentServiceTest {
                 new Student(1L, "John Doe", 20),
                 new Student(2L, "Jane Doe", 21)
         ));
-
         List<Student> students = studentService.getByAge(20);
 
         assertNotNull(students);

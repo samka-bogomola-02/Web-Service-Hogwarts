@@ -11,7 +11,6 @@ public class GlobalExceptionHandler {
     @ResponseStatus(HttpStatus.NOT_FOUND)
     public void handleStudentNotFound(StudentNotFoundException ex) {
     }
-
     @ExceptionHandler(FacultyNotFoundException.class)
     @ResponseStatus(HttpStatus.NOT_FOUND)
     public void handleFacultyNotFound(FacultyNotFoundException ex) {
