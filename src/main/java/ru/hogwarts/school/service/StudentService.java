@@ -1,53 +1,60 @@
 package ru.hogwarts.school.service;
 
 import org.springframework.stereotype.Service;
+import ru.hogwarts.school.exception.FacultyNotFoundException;
+import ru.hogwarts.school.exception.StudentNotFoundException;
 import ru.hogwarts.school.interfaces.StudentServiceInterface;
 import ru.hogwarts.school.model.Student;
+import ru.hogwarts.school.repositories.StudentRepository;
 
 import java.util.Collection;
-import java.util.HashMap;
 import java.util.List;
 
 @Service
 public class StudentService implements StudentServiceInterface {
-    private final HashMap<Long, Student> students = new HashMap<>();
-    private long lastId = 0;
+    private final StudentRepository studentRepository;
+
+    public StudentService(StudentRepository studentRepository) {
+        this.studentRepository = studentRepository;
+    }
 
     //  CRUD-методы
     @Override
     public Student addStudent(Student student) {
-        student.setId(++lastId);
-        students.put(lastId, student);
-        return student;
+        return studentRepository.save(student);
     }
 
     @Override
     public Student findStudentById(long id) {
-        return students.get(id);
-    }
-    @Override
-    public Student editStudent(Student student) {
-        if (students.containsKey(student.getId())) {
-        students.put(student.getId(), student);
-        return student;
-        }
-        return null;
-    }
-    @Override
-    public Student deleteStudent(long id) {
-        students.remove(id);
-        return students.get(id);
-    }
-    @Override
-    public Collection<Student> getAllStudents() {
-        return students.values();
+        return studentRepository.findById(id)
+                .orElseThrow(() -> new StudentNotFoundException(id));
     }
 
     @Override
-    public List<Student> getByAge(int age) {//age
-        return students.values().stream()
-                .filter(student -> student.getAge() == age)
-                .toList();//get filtered students
+    public Student editStudent(Student studentForUpdate) {
+        if (!studentRepository.existsById(studentForUpdate.getId())) {
+            throw new StudentNotFoundException(studentForUpdate.getId());
+        }
+        return studentRepository.save(studentForUpdate);
+    }
+
+    @Override
+    public Student deleteStudent(long id) {
+        Student student = studentRepository.findById(id)
+                .orElseThrow(() -> new StudentNotFoundException(id));
+        studentRepository.deleteById(student.getId());
+        return student;
+    }
+
+    @Override
+    public Collection<Student> getAllStudents() {
+        return studentRepository.findAll();
+    }
+
+    @Override
+    public List<Student> getByAge(int age) {
+        return studentRepository.findAll().stream()
+                .filter(student -> student.getAge() == age).toList();
     }
 
 }

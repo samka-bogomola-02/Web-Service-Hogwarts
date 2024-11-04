@@ -11,7 +11,7 @@ public interface StudentServiceInterface {
 
     Student findStudentById(long id);
 
-    Student editStudent(Student student);
+    Student editStudent(Student studentForUpdate);
 
     Student deleteStudent(long id);
 

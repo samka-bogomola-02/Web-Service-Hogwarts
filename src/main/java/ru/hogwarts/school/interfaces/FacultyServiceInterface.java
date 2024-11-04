@@ -1,7 +1,6 @@
 package ru.hogwarts.school.interfaces;
 
 import ru.hogwarts.school.model.Faculty;
-import ru.hogwarts.school.model.Student;
 
 import java.util.Collection;
 import java.util.List;
@@ -12,7 +11,7 @@ public interface FacultyServiceInterface {
 
     Faculty findFacultyById(long id);
 
-    Faculty editFaculty(Faculty faculty);
+    Faculty editFaculty(Faculty facultyForUpdate);
 
     Faculty deleteFaculty(long id);
 
