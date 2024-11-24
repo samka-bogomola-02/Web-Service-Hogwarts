@@ -8,7 +8,7 @@ import java.util.Objects;
 public class Student {
     // Long id, String name, int age.
     @Id
-    @GeneratedValue
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
     @JsonProperty(access = JsonProperty.Access.READ_ONLY)
     private Long id;
     private String name;
@@ -21,6 +21,10 @@ public class Student {
 
     public Student(Long id, String name, int age) {
         this.id = id;
+        this.name = name;
+        this.age = age;
+    }
+    public Student(String name, int age) {
         this.name = name;
         this.age = age;
     }

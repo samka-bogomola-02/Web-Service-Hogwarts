@@ -27,9 +27,9 @@ public class StudentController {
     }
 
     @GetMapping
-    public ResponseEntity findBooks(@RequestParam(required = false) String name,
-                                    @RequestParam(required = false) Integer age,
-                                    @RequestParam(required = false) String namePart) {
+    public ResponseEntity findStudent(@RequestParam(required = false) String name,
+                                      @RequestParam(required = false) Integer age,
+                                      @RequestParam(required = false) String namePart) {
         if (name != null && !name.isBlank()) {
             return ResponseEntity.ok(studentService.findByName(name));
         }
