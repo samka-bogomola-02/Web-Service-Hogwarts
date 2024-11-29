@@ -3,6 +3,7 @@ package ru.hogwarts.school.controller;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import ru.hogwarts.school.exception.FacultyNotFoundException;
+import ru.hogwarts.school.exception.StudentNotFoundException;
 import ru.hogwarts.school.model.Student;
 import ru.hogwarts.school.service.StudentService;
 
@@ -46,7 +47,9 @@ public class StudentController {
 
     @GetMapping("/age")
     public List<Student> getByAge(@RequestParam("age") int age) {
-        return studentService.getByAge(age);
+        List<Student> students = studentService.getByAge(age);
+        System.out.println("students = " + students);
+        return students;
     }
 
     @PostMapping
@@ -62,11 +65,11 @@ public class StudentController {
     }
 
     @DeleteMapping("{id}/delete")
-    public ResponseEntity<Void> deleteStudent(@PathVariable long id) {
+    public ResponseEntity<Student> deleteStudent(@PathVariable long id) {
         try {
-            studentService.deleteStudent(id);
-            return ResponseEntity.noContent().build(); // Возвращаем статус 204 No Content при успешном удалении
-        } catch (FacultyNotFoundException e) {
+            Student student = studentService.deleteStudent(id);
+            return ResponseEntity.ok().body(student); // Возвращаем статус 200 при успешном удалении
+        } catch (StudentNotFoundException e) {
             return ResponseEntity.notFound().build(); // Возвращаем 404, если факультет не найден
         }
     }
