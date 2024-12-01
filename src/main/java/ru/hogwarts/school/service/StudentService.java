@@ -20,6 +20,7 @@ public class StudentService implements StudentServiceInterface {
     //  CRUD-методы
     @Override
     public Student addStudent(Student student) {
+        System.out.println("studentRepository.save(student) = " + studentRepository.save(student));
         return studentRepository.save(student);
     }
 

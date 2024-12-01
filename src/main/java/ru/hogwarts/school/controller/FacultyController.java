@@ -61,10 +61,10 @@ public class FacultyController {
     }
 
     @DeleteMapping("{id}")
-    public ResponseEntity<Void> deleteFaculty(@PathVariable long id) {
+    public ResponseEntity<Faculty> deleteFaculty(@PathVariable long id) {
         try {
-            facultyService.deleteFaculty(id);
-            return ResponseEntity.noContent().build(); // Возвращаем статус 204 No Content при успешном удалении
+            Faculty faculty = facultyService.deleteFaculty(id);
+            return ResponseEntity.ok().body(faculty); // Возвращаем статус 200 при успешном удалении
         } catch (FacultyNotFoundException e) {
             return ResponseEntity.notFound().build(); // Возвращаем 404, если факультет не найден
         }
