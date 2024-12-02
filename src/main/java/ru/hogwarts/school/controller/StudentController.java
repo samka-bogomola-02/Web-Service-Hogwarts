@@ -3,10 +3,12 @@ package ru.hogwarts.school.controller;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import ru.hogwarts.school.exception.FacultyNotFoundException;
+import ru.hogwarts.school.exception.StudentNotFoundException;
 import ru.hogwarts.school.model.Student;
 import ru.hogwarts.school.service.StudentService;
 
 import java.util.Collection;
+import java.util.List;
 
 @RestController
 @RequestMapping("/student")
@@ -17,7 +19,7 @@ public class StudentController {
         this.studentService = studentService;
     }
 
-    @GetMapping("{id}")
+    @GetMapping("/{id}/get")
     public ResponseEntity<Student> getStudentInfo(@PathVariable long id) {
         Student student = studentService.findStudentById(id);
         if (student == null) {
@@ -27,9 +29,9 @@ public class StudentController {
     }
 
     @GetMapping
-    public ResponseEntity findBooks(@RequestParam(required = false) String name,
-                                    @RequestParam(required = false) Integer age,
-                                    @RequestParam(required = false) String namePart) {
+    public ResponseEntity findStudent(@RequestParam(required = false) String name,
+                                      @RequestParam(required = false) Integer age,
+                                      @RequestParam(required = false) String namePart) {
         if (name != null && !name.isBlank()) {
             return ResponseEntity.ok(studentService.findByName(name));
         }
@@ -44,11 +46,10 @@ public class StudentController {
     }
 
     @GetMapping("/age")
-    public ResponseEntity<Collection<Student>> getByAge(@RequestParam("age") int age) {
-        if (age < 0 || age > 120) {
-            return ResponseEntity.badRequest().build();
-        }
-        return ResponseEntity.ok(studentService.getByAge(age));
+    public List<Student> getByAge(@RequestParam("age") int age) {
+        List<Student> students = studentService.getByAge(age);
+        System.out.println("students = " + students);
+        return students;
     }
 
     @PostMapping
@@ -56,19 +57,19 @@ public class StudentController {
         return studentService.addStudent(student);
     }
 
-    @PutMapping("{id}")
+    @PutMapping("{id}/edit")
     public ResponseEntity<Student> editStudent(@PathVariable long id, Student student) {
         student.setId(id);
         Student student2 = studentService.editStudent(student);
         return ResponseEntity.ok(student2);
     }
 
-    @DeleteMapping("{id}")
-    public ResponseEntity<Void> deleteStudent(@PathVariable long id) {
+    @DeleteMapping("{id}/delete")
+    public ResponseEntity<Student> deleteStudent(@PathVariable long id) {
         try {
-            studentService.deleteStudent(id);
-            return ResponseEntity.noContent().build(); // Возвращаем статус 204 No Content при успешном удалении
-        } catch (FacultyNotFoundException e) {
+            Student student = studentService.deleteStudent(id);
+            return ResponseEntity.ok().body(student); // Возвращаем статус 200 при успешном удалении
+        } catch (StudentNotFoundException e) {
             return ResponseEntity.notFound().build(); // Возвращаем 404, если факультет не найден
         }
     }

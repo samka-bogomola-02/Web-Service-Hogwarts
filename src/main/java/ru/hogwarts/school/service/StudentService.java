@@ -52,6 +52,8 @@ public class StudentService implements StudentServiceInterface {
 
     @Override
     public List<Student> getByAge(int age) {
+        System.out.println("age = " + age);
+        System.out.println("studentRepository.findAll() = " + studentRepository.findAll());
         return studentRepository.findAll().stream()
                 .filter(student -> student.getAge() == age).toList();
     }
