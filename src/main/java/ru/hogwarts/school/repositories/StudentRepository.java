@@ -1,7 +1,11 @@
 package ru.hogwarts.school.repositories;
 
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.JpaRepository;
+import org.springframework.data.jpa.repository.Query;
 import ru.hogwarts.school.model.Student;
+import ru.hogwarts.school.model.StudentInterface;
 
 import java.util.Collection;
 
@@ -9,4 +13,13 @@ public interface StudentRepository extends JpaRepository<Student, Long> {
     Student findByNameIgnoreCase(String name);
     Collection<Student> findByAge(Integer age);
     Collection<Student> findByNameContainsIgnoreCase(String part);
+
+    @Query(value = "SELECT COUNT(*) FROM Student", nativeQuery = true)
+    long countAllStudents();
+    @Query(value = "SELECT AVG(age) FROM Student", nativeQuery = true)
+    Double getAverageAge();
+    @Query("SELECT s FROM Student s ORDER BY s.id DESC")
+    Page<StudentInterface> findLastFiveStudents(Pageable pageable);
+
+
 }

@@ -1,9 +1,13 @@
 package ru.hogwarts.school.service;
 
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import ru.hogwarts.school.exception.StudentNotFoundException;
 import ru.hogwarts.school.interfaces.StudentServiceInterface;
 import ru.hogwarts.school.model.Student;
+import ru.hogwarts.school.model.StudentInterface;
 import ru.hogwarts.school.repositories.StudentRepository;
 
 import java.util.Collection;
@@ -57,6 +61,7 @@ public class StudentService implements StudentServiceInterface {
         return studentRepository.findAll().stream()
                 .filter(student -> student.getAge() == age).toList();
     }
+
     public Student findByName(String name) {
         return studentRepository.findByNameIgnoreCase(name);
     }
@@ -65,6 +70,22 @@ public class StudentService implements StudentServiceInterface {
     }
     public Collection<Student> findByNamePart(String part) {
         return studentRepository.findByNameContainsIgnoreCase(part);
+    }
+
+    @Override
+    public long countAllStudents() {
+        return studentRepository.countAllStudents();
+    }
+
+    @Override
+    public Double getAverageAge() {
+        return studentRepository.getAverageAge();
+    }
+
+    @Override
+    public Page<StudentInterface> findLastFiveStudents() {
+        Pageable pageable = PageRequest.of(0, 5);
+        return studentRepository.findLastFiveStudents(pageable);
     }
 
 }

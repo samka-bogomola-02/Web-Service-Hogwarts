@@ -1,10 +1,13 @@
 package ru.hogwarts.school.controller;
 
+import io.swagger.v3.oas.annotations.Operation;
+import org.springframework.data.domain.Page;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import ru.hogwarts.school.exception.FacultyNotFoundException;
 import ru.hogwarts.school.exception.StudentNotFoundException;
 import ru.hogwarts.school.model.Student;
+import ru.hogwarts.school.model.StudentInterface;
 import ru.hogwarts.school.service.StudentService;
 
 import java.util.Collection;
@@ -72,5 +75,18 @@ public class StudentController {
         } catch (StudentNotFoundException e) {
             return ResponseEntity.notFound().build(); // Возвращаем 404, если факультет не найден
         }
+    }
+
+    @GetMapping("/count")
+    public ResponseEntity<Long> countStudents() {
+        return ResponseEntity.ok(studentService.countAllStudents());
+    }
+    @GetMapping("/average-age") // возвращает с/а возраста
+    public ResponseEntity<Double> AverageAge() {
+        return ResponseEntity.ok(studentService.getAverageAge());
+    }
+    @GetMapping("/last-five")
+    public ResponseEntity<Page<StudentInterface>> lastFiveStudents() {
+        return ResponseEntity.ok(studentService.findLastFiveStudents());
     }
 }
