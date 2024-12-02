@@ -37,19 +37,6 @@ class AvatarServiceTest {
             studentRepository,
             Path.of(TEST_PATH));
 
-//    @AfterEach
-//    void setDown() throws IOException {
-//        Files.walk(Path.of(TEST_PATH))
-//                .sorted(Comparator.reverseOrder())
-//                .forEach(x -> {
-//                    try {
-//                        Files.delete(x);
-//                    } catch (IOException e) {
-//                        throw new RuntimeException(e);
-//                    }
-//
-//                });
-//    }
 
     @Test
     void additionAvatar() throws IOException {

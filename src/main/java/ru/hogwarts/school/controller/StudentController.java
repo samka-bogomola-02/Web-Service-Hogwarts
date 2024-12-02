@@ -67,7 +67,7 @@ public class StudentController {
     public ResponseEntity<Void> deleteStudent(@PathVariable long id) {
         try {
             studentService.deleteStudent(id);
-            return ResponseEntity.noContent().build(); // Возвращаем статус 204 No Content при успешном удалении
+            return ResponseEntity.ok().build(); // Возвращаем статус 200 No Content при успешном удалении
         } catch (FacultyNotFoundException e) {
             return ResponseEntity.notFound().build(); // Возвращаем 404, если факультет не найден
         }
