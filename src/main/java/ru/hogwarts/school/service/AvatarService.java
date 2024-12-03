@@ -2,6 +2,8 @@ package ru.hogwarts.school.service;
 
 import jakarta.transaction.Transactional;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
 import ru.hogwarts.school.exception.AvatarNotFoundException;
@@ -87,5 +89,10 @@ public class AvatarService implements AvatarServiceInterface {
     public Avatar getAvatar(long studentId) throws IOException {
         return avatarRepository.findByStudentId(studentId)
                 .orElseThrow(AvatarNotFoundException::new);
+    }
+
+    @Override
+    public Page<Avatar> getAllAvatars(Pageable pageable) {
+        return avatarRepository.findAll(pageable);
     }
 }

@@ -1,6 +1,8 @@
 package ru.hogwarts.school.interfaces;
 
+import org.springframework.data.domain.Page;
 import ru.hogwarts.school.model.Student;
+import ru.hogwarts.school.model.StudentInterface;
 
 import java.util.Collection;
 import java.util.List;
@@ -17,4 +19,9 @@ public interface StudentServiceInterface {
 
     Collection<Student> getAllStudents();
     List<Student> getByAge(int age);
+    long countAllStudents();
+
+    Double getAverageAge();
+
+    Page<StudentInterface> findLastFiveStudents();
 }
