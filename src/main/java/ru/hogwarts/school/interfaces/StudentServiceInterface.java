@@ -23,5 +23,5 @@ public interface StudentServiceInterface {
 
     Double getAverageAge();
 
-    Page<StudentInterface> findLastFiveStudents();
+    List<Student> findLastFiveStudents();
 }

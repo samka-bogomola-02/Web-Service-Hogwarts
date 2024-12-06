@@ -83,9 +83,7 @@ public class StudentService implements StudentServiceInterface {
     }
 
     @Override
-    public Page<StudentInterface> findLastFiveStudents() {
-        Pageable pageable = PageRequest.of(0, 5);
-        return studentRepository.findLastFiveStudents(pageable);
+    public List<Student> findLastFiveStudents() {
+        return studentRepository.findLastFiveStudents();
     }
-
 }

@@ -8,6 +8,7 @@ import ru.hogwarts.school.model.Student;
 import ru.hogwarts.school.model.StudentInterface;
 
 import java.util.Collection;
+import java.util.List;
 
 public interface StudentRepository extends JpaRepository<Student, Long> {
     Student findByNameIgnoreCase(String name);
@@ -18,8 +19,8 @@ public interface StudentRepository extends JpaRepository<Student, Long> {
     long countAllStudents();
     @Query(value = "SELECT AVG(age) FROM Student", nativeQuery = true)
     Double getAverageAge();
-    @Query("SELECT s FROM Student s ORDER BY s.id DESC")
-    Page<StudentInterface> findLastFiveStudents(Pageable pageable);
+    @Query(value = "SELECT * FROM Student ORDER BY id DESC LIMIT 5", nativeQuery = true)
+    List<Student> findLastFiveStudents();
 
 
 }
