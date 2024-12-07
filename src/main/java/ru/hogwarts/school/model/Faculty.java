@@ -1,5 +1,6 @@
 package ru.hogwarts.school.model;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import jakarta.persistence.*;
 import jakarta.validation.constraints.NotNull;
@@ -8,15 +9,14 @@ import java.util.Collection;
 import java.util.Objects;
 @Entity
 public class Faculty {
-    //Long id, String name, String color.
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-//    @JsonProperty(access = JsonProperty.Access.READ_ONLY)
     @NotNull
     private long id;
     private String name;
     private String color;
     @OneToMany(mappedBy = "faculty")
+    @JsonIgnore
     private Collection<Student> students;
     public Faculty() {
     }
