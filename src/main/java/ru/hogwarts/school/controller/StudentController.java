@@ -46,7 +46,6 @@ public class StudentController {
     @GetMapping("/age")
     public List<Student> getByAge(@RequestParam("age") int age) {
         List<Student> students = studentService.getByAge(age);
-        System.out.println("students = " + students);
         return students;
     }
 
