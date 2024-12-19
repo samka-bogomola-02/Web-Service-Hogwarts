@@ -9,7 +9,9 @@ import ru.hogwarts.school.model.Faculty;
 import ru.hogwarts.school.repositories.FacultyRepository;
 
 import java.util.Collection;
+import java.util.Comparator;
 import java.util.List;
+import java.util.Objects;
 
 @Service
 public class FacultyService implements FacultyServiceInterface {
@@ -73,16 +75,31 @@ public class FacultyService implements FacultyServiceInterface {
                         .toList();
     }
 
+    @Override
     public Faculty findByName(String name) {
         logger.info("Вызван метод для поиска факультета по имени: {}", name);
         return facultyRepository.findByNameIgnoreCase(name);
     }
+
+    @Override
     public Collection<Faculty> findByColor(String color) {
         logger.info("Вызван метод для получения факультетов по цвету: {}", color);
         return facultyRepository.findByColorContainsIgnoreCase(color);
     }
+
+    @Override
     public Collection<Faculty> findByNamePart(String part) {
         logger.info("Вызван метод для получения факультетов по части имени: {}", part);
         return facultyRepository.findByNameContainsIgnoreCase(part);
+    }
+
+    @Override
+    public String getLongestFacultyName() {
+        logger.info("Вызван метод для получения имени факультета с наибольшим количеством символов");
+        return facultyRepository.findAll().stream()
+                .map(Faculty::getName)
+                .filter(Objects::nonNull)
+                .max(Comparator.comparingInt(String::length))
+                .orElse("Нет факультетов"); // Возвращаем сообщение, если нет факультетов
     }
 }
