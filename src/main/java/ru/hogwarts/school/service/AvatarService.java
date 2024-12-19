@@ -1,5 +1,7 @@
 package ru.hogwarts.school.service;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import jakarta.transaction.Transactional;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.data.domain.Page;
@@ -20,8 +22,8 @@ import java.nio.file.Path;
 import java.util.UUID;
 
 @Service
-
 public class AvatarService implements AvatarServiceInterface {
+    private static final Logger logger = LoggerFactory.getLogger(AvatarService.class);
     private final Path pathDir;
     private final AvatarRepository avatarRepository;
     private final StudentRepository studentRepository;
@@ -35,10 +37,15 @@ public class AvatarService implements AvatarServiceInterface {
 
     @Override
     public long additionAvatar(long studentId, MultipartFile file) throws IOException {
+        logger.info("Вызван метод для добавления изображения для студента с ID: {}", studentId);
         Student student = studentRepository.findById(studentId)
-                .orElseThrow(() -> new StudentNotFoundException(studentId));
+                .orElseThrow(() -> {
+                    logger.error("Студент с ID {} не найден", studentId);
+                    return new StudentNotFoundException(studentId);
+                });
 
         Path path = saveAvatarLocal(file);
+        logger.debug("Аватар успешно сохранен по пути: {}", path);
 
         Avatar avatar = new Avatar(
                 path.toString(),
@@ -51,21 +58,27 @@ public class AvatarService implements AvatarServiceInterface {
                 .ifPresent((x) -> {
                     try {
                         Files.delete(Path.of(x.getFilePath()));
+                        logger.info("Старый аватар удален для студента с ID: {}", studentId);
                     } catch (IOException e) {
+                        logger.error("Ошибка при удалении старого аватара для студента с ID: {}", studentId, e);
                         throw new RuntimeException(e);
                     }
                     avatar.setId(x.getId());
         });
-        return avatarRepository.save(avatar).getId();
+        long avatarId = avatarRepository.save(avatar).getId();
+        logger.info("Новый аватар добавлен с ID: {}", avatarId);
+        return avatarId;
     }
     private Path saveAvatarLocal(MultipartFile file) throws IOException {
         createDirectoryIfNotExists();
         if (file.getOriginalFilename() == null) {
-            throw new RuntimeException("Не корректное имя изображения");
+            logger.error("Некорректное имя изображения");
+            throw new RuntimeException("Некорректное имя изображения");
         }
         Path path = Path.of(pathDir.toString(), UUID.randomUUID() + getExtension(file.getOriginalFilename()));
 
         Files.write(path, file.getBytes());
+        logger.debug("Изображение сохранено в локальной файловой системе: {}", path);
         return path;
     }
     private String getExtension(String path) {
@@ -74,6 +87,9 @@ public class AvatarService implements AvatarServiceInterface {
     private void createDirectoryIfNotExists() throws IOException{
         if (Files.notExists(pathDir)) {
         Files.createDirectory(pathDir);
+            logger.info("Создана директория для хранения изображений: {}", pathDir);
+        } else {
+            logger.debug("Директория уже существует: {}", pathDir);
         }
     }
 
@@ -81,18 +97,25 @@ public class AvatarService implements AvatarServiceInterface {
     @Override
     public Avatar getAvatarDb(long studentId) {
         return avatarRepository.findByStudentId(studentId)
-                .orElseThrow(AvatarNotFoundException::new);
+                .orElseThrow(() -> {
+                    logger.error("Аватар не найден для студента с ID: {}", studentId);
+                    return new AvatarNotFoundException();
+                });
     }
 
     @Transactional
     @Override
     public Avatar getAvatar(long studentId) throws IOException {
         return avatarRepository.findByStudentId(studentId)
-                .orElseThrow(AvatarNotFoundException::new);
+                .orElseThrow(() -> {
+                    logger.error("Аватар не найден для студента с ID: {}", studentId);
+                    return new AvatarNotFoundException();
+                });
     }
 
     @Override
     public Page<Avatar> getAllAvatars(Pageable pageable) {
+        logger.debug("Получение всех аватаров с пагинацией: {}", pageable);
         return avatarRepository.findAll(pageable);
     }
 }

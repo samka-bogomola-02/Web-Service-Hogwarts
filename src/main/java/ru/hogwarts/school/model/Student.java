@@ -34,6 +34,15 @@ public class Student {
         this.faculty = faculty;
         this.avatar = avatar;
     }
+    public Student(String name, int age) {
+        this.name = name;
+        this.age = age;
+    }
+    public Student(long id, String name, int age) {
+        this.id = id;
+        this.name = name;
+        this.age = age;
+    }
 
     public Long getId() {
         return id;
