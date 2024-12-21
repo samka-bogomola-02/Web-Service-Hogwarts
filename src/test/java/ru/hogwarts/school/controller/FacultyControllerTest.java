@@ -182,4 +182,27 @@ public class FacultyControllerTest {
         // Проверяем, что ответ имеет статус 404 Not Found
         assertThat(response.getStatusCode()).isEqualTo(HttpStatus.NOT_FOUND);
     }
+    @Test
+    public void testGetLongestFacultyName() {
+        Faculty faculty1 = new Faculty();
+        faculty1.setName("Faculty");
+        faculty1.setColor("green");
+        facultyRepository.save(faculty1);
+
+        Faculty faculty2 = new Faculty();
+        faculty2.setName("Facultyy");
+        faculty2.setColor("green");
+        facultyRepository.save(faculty2);
+
+        Faculty faculty3 = new Faculty();
+        faculty3.setName("Facultyyy");
+        faculty3.setColor("green");
+        facultyRepository.save(faculty3);
+
+        ResponseEntity<String> response = restTemplate.getForEntity(
+                "http://localhost:" + port + "/faculty/longest-name", String.class);
+
+        assertThat(response.getStatusCode()).isEqualTo(HttpStatus.OK);
+        assertThat(response.getBody()).isEqualTo("Facultyyy");
+    }
 }
