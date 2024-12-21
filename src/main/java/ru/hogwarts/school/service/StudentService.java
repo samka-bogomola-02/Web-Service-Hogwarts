@@ -10,12 +10,21 @@ import ru.hogwarts.school.repositories.StudentRepository;
 
 import java.util.Collection;
 import java.util.List;
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Executors;
 import java.util.stream.Collectors;
 
 @Service
 public class StudentService implements StudentServiceInterface {
     private static final Logger logger = LoggerFactory.getLogger(StudentService.class);
     private final StudentRepository studentRepository;
+
+    private static final int FIRST_INDEX = 0;
+    private static final int SECOND_INDEX = 1;
+    private static final int THIRD_INDEX = 2;
+    private static final int FOURTH_INDEX = 3;
+    private static final int FIFTH_INDEX = 4;
+    private static final int SIXTH_INDEX = 5;
 
     public StudentService(StudentRepository studentRepository) {
         this.studentRepository = studentRepository;
@@ -61,7 +70,7 @@ public class StudentService implements StudentServiceInterface {
     }
 
     @Override
-    public Collection<Student> getAllStudents() {
+    public List<Student> getAllStudents() {
         logger.info("Вызван метод для получения всех студентов");
         return studentRepository.findAll();
     }
@@ -120,4 +129,63 @@ public class StudentService implements StudentServiceInterface {
                 .sorted()
                 .collect(Collectors.toList());
     }
+
+    public List<Student> printParallelStudents() {
+        logger.info("Вызван метод для вывода в консоль имена студентов в параллельном режиме");
+        List<Student> students = studentRepository.findAll();
+        CheckingTheNumberOfStudents();
+
+        // Создаем пул потоков
+        ExecutorService executor = Executors.newFixedThreadPool(3);
+
+        printStudentName(students.get(FIRST_INDEX).getName());
+        printStudentName(students.get(SECOND_INDEX).getName());
+
+        executor.submit(() -> printStudentNames(students, THIRD_INDEX, FOURTH_INDEX));
+        executor.submit(() -> printStudentNames(students, FIFTH_INDEX, SIXTH_INDEX));
+        // Завершаем работу пула потоков
+        executor.shutdown();
+        return students;
+    }
+
+    // Синхронизированный метод для вывода имени студента
+    public synchronized void printStudentName(String name) {
+        System.out.println(name);
+    }
+
+    public List<Student> printSynchronizedStudents() {
+        logger.info("Вызван метод для вывода в консоль имена студентов в синхронном режиме");
+        List<Student> students = studentRepository.findAll();
+        CheckingTheNumberOfStudents();
+
+        printStudentName(students.get(FIRST_INDEX).getName());
+        printStudentName(students.get(SECOND_INDEX).getName());
+
+        // Создаем пул потоков
+        ExecutorService executor = Executors.newFixedThreadPool(2);
+
+        executor.submit(() -> {
+            printStudentName(students.get(THIRD_INDEX).getName());
+            printStudentName(students.get(FOURTH_INDEX).getName());
+        });
+
+        executor.submit(() -> {
+            printStudentName(students.get(FIFTH_INDEX).getName());
+            printStudentName(students.get(SIXTH_INDEX).getName());
+        });
+        // Завершаем работу пула потоков
+        executor.shutdown();
+        return students;
+    }
+    private void printStudentNames(List<Student> students, int index1, int index2) {
+        System.out.println(students.get(index1).getName());
+        System.out.println(students.get(index2).getName());
+    }
+    private void CheckingTheNumberOfStudents(){
+        if (studentRepository.countAllStudents() < 6) {
+            logger.error("Общее кол-во студентов должно быть > 6!");
+            System.out.println("Недостаточно студентов для вывода.");
+        }
+    }
+
 }

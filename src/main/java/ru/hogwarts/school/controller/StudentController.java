@@ -4,11 +4,9 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import ru.hogwarts.school.exception.StudentNotFoundException;
 import ru.hogwarts.school.model.Student;
-import ru.hogwarts.school.repositories.StudentRepository;
 import ru.hogwarts.school.service.StudentService;
 
 import java.util.List;
-import java.util.stream.Collectors;
 
 @RestController
 @RequestMapping("/student")
@@ -69,7 +67,7 @@ public class StudentController {
             Student student = studentService.deleteStudent(id);
             return ResponseEntity.ok().body(student); // Возвращаем статус 200 при успешном удалении
         } catch (StudentNotFoundException e) {
-            return ResponseEntity.notFound().build(); // Возвращаем 404, если факультет не найден
+            return ResponseEntity.notFound().build(); // Возвращаем 404, если студент не найден
         }
     }
 
@@ -89,5 +87,15 @@ public class StudentController {
     @GetMapping("/names-starting-with-a")
     public ResponseEntity<List<String>> getNameStartingWithA() {
         return ResponseEntity.ok(studentService.getNamesStartingWithA());
+    }
+
+    @GetMapping("/students/print-parallel")
+    public ResponseEntity<List<Student>> printParallelStudents() {
+        return ResponseEntity.ok(studentService.printParallelStudents());
+    }
+
+    @GetMapping("/students/print-synchronized")
+    public ResponseEntity<List<Student>> printSynchronizedStudents() {
+       return ResponseEntity.ok(studentService.printSynchronizedStudents());
     }
 }

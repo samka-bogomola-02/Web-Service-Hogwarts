@@ -15,7 +15,9 @@ import ru.hogwarts.school.model.Student;
 import ru.hogwarts.school.repositories.StudentRepository;
 import ru.hogwarts.school.service.StudentService;
 
+import java.util.Arrays;
 import java.util.List;
+import java.util.stream.Collectors;
 
 import static org.apache.commons.lang3.RandomUtils.nextInt;
 import static org.assertj.core.api.AssertionsForInterfaceTypes.assertThat;
@@ -47,7 +49,6 @@ class StudentControllerTest {
         student.setAge(age);
         studentRepository.save(student);
 
-        System.out.println(student);
 
         ResponseEntity<Student> response = restTemplate.getForEntity(
                 "http://localhost:" + port + "/student/" + student.getId() + "/get",
@@ -60,7 +61,20 @@ class StudentControllerTest {
         assertThat(response.getStatusCode()).isEqualTo(OK);
         assertThat(response.getBody()).isNotNull();
         Student body = response.getBody();
+        assertThat(body.getName()).isEqualTo("Student1");
+        assertThat(body.getAge()).isEqualTo(age);
     }
+    @Test
+    void getStudentInfoNotFound() throws Exception {
+        long nonExistentId = 999L;
+        ResponseEntity<Student> response = restTemplate.getForEntity(
+                "http://localhost:" + port + "/students/" + nonExistentId + "/get",
+                Student.class, nonExistentId
+        );
+        assertThat(response).isNotNull();
+        assertThat(response.getStatusCode()).isEqualTo(HttpStatus.NOT_FOUND);
+    }
+
 
     @Test
     void findStudent() { // all
@@ -174,6 +188,7 @@ class StudentControllerTest {
         Student actual = studentRepository.findById(body.getId()).orElse(null);
     }
 
+
     @Test
     public void testDeleteNonExistingStudent() {
         // Удаляем несуществующего студента
@@ -184,5 +199,91 @@ class StudentControllerTest {
 
         // Проверяем, что ответ имеет статус 404 Not Found
         assertThat(response.getStatusCode()).isEqualTo(HttpStatus.NOT_FOUND);
+    }
+
+    @Test
+    void countStudents() {
+        studentRepository.save(new Student("Alice", 20));
+        studentRepository.save(new Student("Bob", 22));
+
+        ResponseEntity<Long> response = restTemplate.getForEntity("http://localhost:" + port + "/student/count", Long.class);
+
+        assertThat(response.getStatusCode()).isEqualTo(HttpStatus.OK);
+        assertThat(response.getBody()).isEqualTo(2L); // Проверяем, что количество студентов равно 2
+    }
+
+    @Test
+    void averageAge() {
+        studentRepository.save(new Student("Alice", 20));
+        studentRepository.save(new Student("Bob", 30));
+
+        ResponseEntity<Double> response = restTemplate.getForEntity(
+                "http://localhost:" + port + "/student/average-age", Double.class);
+
+        assertThat(response.getStatusCode()).isEqualTo(HttpStatus.OK);
+        assertThat(response.getBody()).isEqualTo(25.0); // Проверяем, что средний возраст равен 25
+    }
+
+    @Test
+    void lastFiveStudents() {
+        for (int i = 1; i <= 7; i++) {
+            studentRepository.save(new Student("Student" + i, 20 + i));
+        }
+
+        ResponseEntity<List<Student>> response = restTemplate.exchange(
+                "http://localhost:" + port + "/student/last-five", HttpMethod.GET, null,
+                new ParameterizedTypeReference<List<Student>>() {});
+
+        assertThat(response.getStatusCode()).isEqualTo(HttpStatus.OK);
+        assertThat(response.getBody()).hasSize(5);
+        assertThat(response.getBody().get(0).getName()).isEqualTo("Student7");
+    }
+
+    @Test
+    void getNamesStartingWithA() {
+        studentRepository.save(new Student("Alice", 20));
+        studentRepository.save(new Student("Bob", 22));
+        studentRepository.save(new Student("Anna", 21));
+
+        ResponseEntity<List<String>> response = restTemplate.exchange(
+                "http://localhost:" + port + "/student/names-starting-with-a", HttpMethod.GET, null,
+                new ParameterizedTypeReference<List<String>>() {});
+
+        assertThat(response.getStatusCode()).isEqualTo(HttpStatus.OK);
+        // Приводим имена к нужному формату (первая буква заглавная, остальные строчные)
+        List<String> expectedNames = Arrays.asList("Alice", "Anna");
+        List<String> formattedResponseNames = response.getBody().stream()
+                .map(name -> name.substring(0, 1).toUpperCase() + name.substring(1).toLowerCase())
+                .collect(Collectors.toList());
+
+        assertThat(formattedResponseNames).containsExactlyInAnyOrderElementsOf(expectedNames);
+    }
+
+    @Test
+    void printParallelStudents() {
+        for (int i = 1; i <= 5; i++) {
+            studentRepository.save(new Student("Student" + i, 20 + i));
+        }
+
+        ResponseEntity<List<Student>> response = restTemplate.exchange(
+                "http://localhost:" + port + "/student/students/print-parallel", HttpMethod.GET, null,
+                new ParameterizedTypeReference<List<Student>>() {});
+
+        assertThat(response.getStatusCode()).isEqualTo(HttpStatus.OK);
+        assertThat(response.getBody()).hasSize(5); // Проверяем, что возвращено 5 студентов
+    }
+
+    @Test
+    void printSynchronizedStudents() {
+        for (int i = 1; i <= 5; i++) {
+            studentRepository.save(new Student("Student" + i, 20 + i));
+        }
+
+        ResponseEntity<List<Student>> response = restTemplate.exchange(
+                "http://localhost:" + port + "/student/students/print-synchronized", HttpMethod.GET, null,
+                new ParameterizedTypeReference<List<Student>>() {});
+
+        assertThat(response.getStatusCode()).isEqualTo(HttpStatus.OK);
+        assertThat(response.getBody()).hasSize(5);
     }
 }
