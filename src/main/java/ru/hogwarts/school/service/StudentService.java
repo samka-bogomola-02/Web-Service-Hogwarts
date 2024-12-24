@@ -133,7 +133,7 @@ public class StudentService implements StudentServiceInterface {
     public List<Student> printParallelStudents() {
         logger.info("Вызван метод для вывода в консоль имена студентов в параллельном режиме");
         List<Student> students = studentRepository.findAll();
-        CheckingTheNumberOfStudents();
+        checkingTheNumberOfStudents();
 
         // Создаем пул потоков
         ExecutorService executor = Executors.newFixedThreadPool(3);
@@ -156,7 +156,7 @@ public class StudentService implements StudentServiceInterface {
     public List<Student> printSynchronizedStudents() {
         logger.info("Вызван метод для вывода в консоль имена студентов в синхронном режиме");
         List<Student> students = studentRepository.findAll();
-        CheckingTheNumberOfStudents();
+        checkingTheNumberOfStudents();
 
         printStudentName(students.get(FIRST_INDEX).getName());
         printStudentName(students.get(SECOND_INDEX).getName());
@@ -181,7 +181,7 @@ public class StudentService implements StudentServiceInterface {
         System.out.println(students.get(index1).getName());
         System.out.println(students.get(index2).getName());
     }
-    private void CheckingTheNumberOfStudents(){
+    private void checkingTheNumberOfStudents(){
         if (studentRepository.countAllStudents() < 6) {
             logger.error("Общее кол-во студентов должно быть > 6!");
             System.out.println("Недостаточно студентов для вывода.");
